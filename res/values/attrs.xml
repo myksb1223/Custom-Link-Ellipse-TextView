@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<declare-styleable name="LinkEllipseTextView">
+       <attr name="isLinkable" format="boolean" />
+       <attr name="isEndEllipsable" format="boolean" />
+       <attr name="maxLines" format="integer" />
+       <attr name="text" format="string" />
+   </declare-styleable>
+    
+</resources>

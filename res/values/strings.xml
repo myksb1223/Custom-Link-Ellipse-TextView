@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">LinkEllipseTextView</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="left_side">Custom</string>
+    <string name="right_side">Default</string>
+    <string name="enable">Link Enable</string>
+	<string name="disable">Link Disable</string>
+	<string name="more">more</string>
+    <string name="ellipse_enable">Ellipse Enable</string>
+	<string name="ellipse_disable">Ellipse Disable</string>
+		
+</resources>
