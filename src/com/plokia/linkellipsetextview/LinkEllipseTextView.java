@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 public class LinkEllipseTextView extends TextView {
 	private static String TAG = "LinkEllipseTextView";
+	private String moreStr;
 	
 	private boolean mIsLinkable = true;
 	private boolean mIsEndEllipsable = true;
@@ -27,6 +28,7 @@ public class LinkEllipseTextView extends TextView {
 	// Control infinite loop of onDraw().
 	private boolean mIsRemake = true;
 	private boolean mIsFinishEllipsed = false;
+	private boolean mIsSplited = false;
 	
 	private int mMaxLines = 5;
 	private String mText;
@@ -111,7 +113,7 @@ public class LinkEllipseTextView extends TextView {
    */	
 	private void init(Context context) {
 		mCfx = context;		
-		
+		moreStr = mCfx.getString(R.string.more);
 		// Cancel ellipsis in super. 
 		super.setEllipsize(null);
 	}
@@ -135,7 +137,6 @@ public class LinkEllipseTextView extends TextView {
 		mIsLinkable = isLinkable;		
 		mIsRemake = true;
 		invalidate();
-//		requestLayout();
 	}
 
   /**
@@ -259,7 +260,8 @@ public class LinkEllipseTextView extends TextView {
   		int lineCount = getLineCount();
   		if(lineCount > getMaxLines()) {
   	  	if(!mIsFinishEllipsed) {
-  	  		splitText();	  		
+  	  		splitText();
+  	  		mIsSplited = true;
   	  	}
   		}
   	}
@@ -276,9 +278,11 @@ public class LinkEllipseTextView extends TextView {
   		}  	
   		else if(mIsEndEllipsable) {
   			// The text always has end ellipsis with 'more' which should be clickable, if mIsEndEllipsable is true.
-  			mLinkableText = new SpannableString(text);  			
-  	  	InternalMoreSpan span = new InternalMoreSpan(mCfx.getString(R.string.more));  	
-  	  	mLinkableText.setSpan(span, mLinkableText.length()-4, mLinkableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);  			  			
+  			if(mIsSplited) {
+  				mLinkableText = new SpannableString(text);  			
+  				InternalMoreSpan span = new InternalMoreSpan(moreStr);  	
+  				mLinkableText.setSpan(span, mLinkableText.length()-moreStr.length(), mLinkableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+  			}
   		}
   		else {
   			mLinkableText = new SpannableString(text);
@@ -289,6 +293,7 @@ public class LinkEllipseTextView extends TextView {
   	
   	mIsFinishEllipsed = true;
   	mIsRemake = false;
+  	mIsSplited = false;
   }
   
   private void splitText() {  	
@@ -297,7 +302,7 @@ public class LinkEllipseTextView extends TextView {
   	int maxLines = getMaxLines();
   	
   	String splitedText = text.substring(0, layout.getLineEnd(maxLines - 1)).trim();
-  	splitedText = splitedText + " ..." + mCfx.getString(R.string.more);
+  	splitedText = splitedText + " ..." + moreStr;
   	
   	mIsFinishEllipsed = true;  	
   	super.setText(splitedText);
@@ -330,8 +335,10 @@ public class LinkEllipseTextView extends TextView {
          mLinkableText.setSpan(linkSpec.span, linkSpec.start, linkSpec.end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
      }
 
-	  	InternalMoreSpan span = new InternalMoreSpan(mCfx.getString(R.string.more));  	
-	  	mLinkableText.setSpan(span, mLinkableText.length()-4, mLinkableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);           
+     if(mIsSplited) {
+    	 InternalMoreSpan span = new InternalMoreSpan(moreStr);  	
+    	 mLinkableText.setSpan(span, mLinkableText.length()-moreStr.length(), mLinkableText.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+     }
   }    
   
   private final void gatherLinks(ArrayList<Hyperlink> links, Spannable s, Pattern pattern) {
@@ -396,8 +403,11 @@ public class LinkEllipseTextView extends TextView {
   	  	
   	@Override
   	public void updateDrawState(TextPaint tp) {
-  		// Remove underline and blue color, because 'more' is not link.
-  		tp.linkColor = Color.BLACK;
+  		// Remove underline and red color, because 'more' is not link.
+  		super.updateDrawState(tp);
+  		tp.setUnderlineText(false);
+  		tp.setColor(0xfff2b9b6);
+  		tp.setTextSize(22);
   	}
   	
   	@Override
